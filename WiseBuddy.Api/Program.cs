@@ -4,6 +4,7 @@ using WiseBuddy.Api.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using WiseBuddy.Api.Data.Context;
 using WiseBuddy.Api.Gateway;
+using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
@@ -25,15 +27,19 @@ builder.Services.AddScoped<CotacaoService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ISuitabilityRepository, SuitabilityRepository>();
 builder.Services.AddScoped<IRecomendacaoRepository, RecomendacaoRepository>();
-builder.Services.AddHttpClient<IMarketGateway, CoinGeckoGateway>();
+
+builder.Services.AddHttpClient<IMarketGateway, CoinGeckoGateway>()
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler());
+builder.Services.AddScoped<IMarketGateway>(sp =>
+{
+    var client = sp.GetRequiredService<HttpClient>();
+    var cache = sp.GetRequiredService<IMemoryCache>();
+    return new CoinGeckoGateway(client, cache);
+});
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
-}
+
 
 app.UseSwagger();
 app.UseSwaggerUI();

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
 using WiseBuddy.Api.Dto;
 
 namespace WiseBuddy.Api.Gateway;
@@ -6,36 +7,49 @@ namespace WiseBuddy.Api.Gateway;
 public class CoinGeckoGateway : IMarketGateway, IDisposable
 {
     private readonly HttpClient _httpClient;
+    private readonly IMemoryCache _cache;
+    private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
 
-    public CoinGeckoGateway(HttpClient httpClient)
+    public CoinGeckoGateway(HttpClient httpClient, IMemoryCache cache)
     {
-        this._httpClient = httpClient;
+        _httpClient = httpClient;
+        _cache = cache;
     }
 
     public void Dispose()
     {
-        this._httpClient.Dispose();
+        _httpClient.Dispose();
     }
 
     public async Task<IEnumerable<MarketDto>> GetMarketsAsync(int totalPerPage)
     {
+        var cacheKey = $"markets_{totalPerPage}";
+
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<MarketDto>? cachedMarkets) && cachedMarkets is not null)
+        {
+            return cachedMarkets;
+        }
+
         var httpRequestMessage = new HttpRequestMessage
         {
             Method = HttpMethod.Get,
             RequestUri = this.GetCoinGeckoUri(totalPerPage)
         };
 
-        httpRequestMessage.Headers.Add("User-Agent", "WiseBuddyApp/1.0 (+https://wisebuddy.com)");
+        httpRequestMessage.Headers.Add("User-Agent", "WiseBuddyApp/1.0 (+https://sprint-4-fiap.onrender.com)");
 
-        var response = await this._httpClient.SendAsync(httpRequestMessage);
+        var response = await _httpClient.SendAsync(httpRequestMessage);
 
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();
 
-        var markets = JsonSerializer.Deserialize<IEnumerable<MarketDto>>(content);
+        var markets = JsonSerializer.Deserialize<IEnumerable<MarketDto>>(content) 
+                      ?? throw new Exception("Falha ao desserializar os mercados");
 
-        return markets ?? throw new Exception();
+        _cache.Set(cacheKey, markets, _cacheDuration);
+
+        return markets;
     }
 
     private Uri GetCoinGeckoUri(int totalPage)
