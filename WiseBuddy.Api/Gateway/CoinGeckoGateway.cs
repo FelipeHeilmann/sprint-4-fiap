@@ -8,7 +8,7 @@ public class CoinGeckoGateway : IMarketGateway, IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly IMemoryCache _cache;
-    private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(40);
 
     public CoinGeckoGateway(HttpClient httpClient, IMemoryCache cache)
     {

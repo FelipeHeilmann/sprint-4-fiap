@@ -4,7 +4,6 @@ using WiseBuddy.Api.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using WiseBuddy.Api.Data.Context;
 using WiseBuddy.Api.Gateway;
-using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,15 +26,7 @@ builder.Services.AddScoped<CotacaoService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ISuitabilityRepository, SuitabilityRepository>();
 builder.Services.AddScoped<IRecomendacaoRepository, RecomendacaoRepository>();
-
-builder.Services.AddHttpClient<IMarketGateway, CoinGeckoGateway>()
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler());
-builder.Services.AddScoped<IMarketGateway>(sp =>
-{
-    var client = sp.GetRequiredService<HttpClient>();
-    var cache = sp.GetRequiredService<IMemoryCache>();
-    return new CoinGeckoGateway(client, cache);
-});
+builder.Services.AddHttpClient<IMarketGateway, CoinGeckoGateway>();
 
 var app = builder.Build();
 
