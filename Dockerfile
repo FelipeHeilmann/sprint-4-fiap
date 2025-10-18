@@ -1,5 +1,5 @@
 # Etapa 1: build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copia os arquivos da solução
@@ -17,7 +17,7 @@ WORKDIR /src/WiseBuddy.Api
 RUN dotnet publish -c Release -o /app/out
 
 # Etapa 2: runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app/out ./
 
