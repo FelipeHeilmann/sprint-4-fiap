@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: wisebuddy_postgres
+    environment:
+      POSTGRES_DB: wisebuddydb
+      POSTGRES_USER: wisebuddyuser
+      POSTGRES_PASSWORD: wisebudypass123!
+    ports:
+      - "5432:5432"
+    networks:
+      - wise_buddy_network
+    restart: unless-stopped
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  wise_buddy_network:
+    driver: bridge
