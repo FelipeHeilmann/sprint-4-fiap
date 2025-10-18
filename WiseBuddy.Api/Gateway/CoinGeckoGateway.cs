@@ -54,6 +54,6 @@ public class CoinGeckoGateway : IMarketGateway, IDisposable
 
     private Uri GetCoinGeckoUri(int totalPage)
     {
-        return new Uri($"https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&order=market_cap_desc&per_page={totalPage}&page=1");
+        return new Uri($"https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&order=market_cap_desc&per_page={totalPage}&page=1&x_cg_demo_api_key=CG-LpmGsUHYNi376ZYFvNffFYa1");
     }
 }
