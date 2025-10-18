@@ -24,6 +24,11 @@
 - ✅ Relacionamento com suitability e recomendações
 - ✅ Soft delete para preservar histórico
 
+### 💹 **Consulta de Cotações de Criptomoedas**
+- ✅ Endpoint para consultar preços de mercado de criptomoedas
+- ✅ Cache em memória de 5 minutos para evitar bloqueios da API externa
+
+---
 ---
 
 ## 🏗️ **Arquitetura & Tecnologias**
@@ -87,7 +92,18 @@ docker-compose ps
 dotnet tool install --global dotnet-ef --version 9.0.0
 ```
 
-### **2. Configurar Banco de Dados**
+### **2. Definir Variável de Ambiente**
+Para que o endpoint de cotações funcione corretamente, você precisa definir a variável de ambiente contendo sua **API Key** da CoinGecko.
+
+- **Nome da variável:** `API_KEY`  
+- **Valor:** sua chave da API (exemplo: `pldasd`)
+
+#### **Exemplo no Linux/macOS (bash/zsh)**
+```bash
+export API_KEY=pldasd
+```
+
+### **3. Configurar Banco de Dados**
 ```bash
 # Navegar para o projeto
 cd WiseBuddy.Api
@@ -99,7 +115,7 @@ dotnet restore
 dotnet ef database update
 ```
 
-### **3. Executar a Aplicação**
+### **4. Executar a Aplicação**
 ```bash
 # Desenvolvimento
 dotnet run
@@ -111,10 +127,9 @@ dotnet run --configuration Release
 dotnet watch run
 ```
 
-### **4. Verificar Funcionamento**
+### **5. Verificar Funcionamento**
 - **API**: http://localhost:5000
 - **Swagger**: http://localhost:5000/swagger
-- **Health Check**: http://localhost:5000/health
 
 ---
 
