@@ -33,6 +33,8 @@
 
 ## 🏗️ **Arquitetura & Tecnologias**
 
+![Diagrama de Arquitetura](images/arch_spint.png)
+
 ### **Stack Principal**
 - **[.NET 9](https://dotnet.microsoft.com/)** - Framework moderno e performático
 - **[Entity Framework Core 9](https://learn.microsoft.com/ef/)** - ORM com suporte completo ao PostgreSQL
